@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Call Ended Stamp Effect</title>
+    <style>
+        /* General styling for the page */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f0f0;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        /* The main container for the stamp effect */
+        .stamp-container {
+            position: relative;
+            padding: 20px 40px;
+            text-align: center;
+            /* Scale it down slightly for a typical stamp size */
+            transform: scale(0.8);
+        }
+
+        /* The text styling */
+        .stamp-text {
+            color: #E74C3C; /* Bright Red */
+            font-size: 80px;
+            font-weight: 900;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            line-height: 1;
+            /* CSS to create the distressed/grunge effect */
+            text-shadow: 
+                2px 2px 0 #C0392B,   /* Darker shadow for depth */
+                -1px -1px 0 #C0392B,
+                1px 1px 1px rgba(0, 0, 0, 0.3); /* Soft shadow */
+            
+            /* The key to the distressed look: slightly offset duplicate text layers */
+            position: relative;
+            z-index: 2;
+            mix-blend-mode: multiply; /* Helps the texture blend */
+        }
+
+        /* Pseudo-element to act as a layer of "ink splatter" */
+        .stamp-text::before {
+            content: attr(data-text); /* Use the text content */
+            position: absolute;
+            top: 1px;
+            left: 1px;
+            color: #C0392B; /* Slightly darker red */
+            opacity: 0.7;
+            /* Introduce noise/texture via a filter and slight jitter */
+            filter: url(#noise); /* Requires an SVG filter definition below */
+            transform: translate(0.5px, -0.5px);
+            z-index: 1;
+        }
+
+        /* The inner and outer red border lines */
+        .stamp-border {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border: 5px solid #E74C3C; /* Outer border */
+            border-radius: 5px;
+            z-index: 0;
+        }
+
+        /* Inner border using a pseudo-element */
+        .stamp-border::after {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border: 3px solid #E74C3C; /* Inner border */
+            border-radius: 3px;
+            /* Apply the same distressed jitter as the text */
+            filter: url(#noise);
+            opacity: 0.9;
+        }
+
+        /* * SVG Filter for Noise/Grunge Effect 
+         * This creates the textured, non-uniform edges typical of a rubber stamp.
+         */
+        #noise-filter {
+            width: 0;
+            height: 0;
+            position: absolute;
+            opacity: 0; /* Keep the SVG invisible */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SVG filter definition MUST be included in the body for modern browser compatibility -->
+    <svg id="noise-filter">
+        <filter id="noise">
+            <!-- Create a turbulent noise pattern -->
+            <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" result="t"/>
+            <!-- Use a displacement map to distort the edges of the element this filter is applied to -->
+            <feDisplacementMap in="SourceGraphic" in2="t" scale="3" xChannelSelector="R" yChannelSelector="G"/>
+        </filter>
+    </svg>
+
+    <!-- The stamp HTML structure -->
+    <div class="stamp-container">
+        <!-- The border element that uses a pseudo-element for the double border -->
+        <div class="stamp-border"></div>
+        
+        <!-- The text element; the data-text attribute is used by the ::before pseudo-element -->
+        <div class="stamp-text" data-text="CALL ENDED">
+            CALL ENDED
+        </div>
+    </div>
+
+</body>
+</html>
